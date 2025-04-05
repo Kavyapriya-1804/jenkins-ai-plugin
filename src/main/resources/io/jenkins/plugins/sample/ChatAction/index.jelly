@@ -1,0 +1,40 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:l="/lib/layout" xmlns:st="jelly:stapler">
+    <l:layout title="LLM Chat Interface">
+        <l:main-panel>
+            <h1>LLM Chat Interface</h1>
+            <p>Enter your query below:</p>
+            <textarea id="query" rows="4" cols="60" placeholder="Type your message here"></textarea><br/><br/>
+            <button onclick="sendQuery()">Send</button>
+            <h2>Response:</h2>
+            <pre id="response"></pre>
+
+            <script type="text/javascript">
+                function sendQuery() {
+                    var query = document.getElementById("query").value;
+                    if (query.trim() === "") {
+                        alert("Please enter a query.");
+                        return;
+                    }
+                    // Construct the URL for the chat endpoint
+                    var baseUrl = window.location.origin + window.location.pathname;
+                    if (!baseUrl.endsWith("/")) {
+                        baseUrl += "/";
+                    }
+                    var url = new URL("chat", baseUrl);
+                    url.searchParams.set("query", query);
+                    url = url.toString();
+
+                    fetch(url, { method: 'GET' })
+                    .then(function(response) { return response.text(); })
+                    .then(function(text) {
+                        document.getElementById("response").innerText = text;
+                    })
+                    .catch(function(error) {
+                        document.getElementById("response").innerText = "Error: " + error;
+                    });
+                }
+            </script>
+        </l:main-panel>
+    </l:layout>
+</j:jelly>
