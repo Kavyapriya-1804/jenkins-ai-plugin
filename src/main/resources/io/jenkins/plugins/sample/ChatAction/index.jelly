@@ -2,12 +2,20 @@
 <j:jelly xmlns:j="jelly:core" xmlns:l="/lib/layout" xmlns:st="jelly:stapler">
     <l:layout title="LLM Chat Interface">
         <l:main-panel>
-            <h1>LLM Chat Interface</h1>
-            <p>Enter your query below:</p>
-            <textarea id="query" rows="4" cols="60" placeholder="Type your message here"></textarea><br/><br/>
-            <button onclick="sendQuery()">Send</button>
-            <h2>Response:</h2>
-            <pre id="response"></pre>
+            <div style="text-align:center; padding: 20px;">
+                <h1 style="font-family: Arial, sans-serif; color: #4CAF50;">LLM Chat Interface</h1>
+                <p style="font-size: 16px; color: #555;">Enter your query below and hit "Send" to chat with the LLM.</p>
+
+                <div id="chat-container" style="border: 1px solid #ddd; padding: 20px; width: 80%; margin: 0 auto; max-height: 400px; overflow-y: scroll; background-color: #f9f9f9;">
+                    <!-- Chat messages will appear here -->
+                </div>
+
+                <textarea id="query" rows="4" cols="60" placeholder="Type your message here..." style="width: 80%; margin-top: 20px; padding: 10px; border-radius: 5px; border: 1px solid #ddd;"></textarea><br/><br/>
+
+                <button onclick="sendQuery()" style="background-color: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
+                    Send
+                </button>
+            </div>
 
             <script type="text/javascript">
                 function sendQuery() {
@@ -16,6 +24,27 @@
                         alert("Please enter a query.");
                         return;
                     }
+
+                    var chatContainer = document.getElementById("chat-container");
+                    var userMessage = document.createElement("div");
+                    userMessage.style.textAlign = "right";
+                    userMessage.style.margin = "10px";
+
+                    var messageBubble = document.createElement("div");
+                    messageBubble.style.padding = "10px";
+                    messageBubble.style.display = "inline-block";
+                    messageBubble.style.borderRadius = "10px";
+                    messageBubble.style.maxWidth = "70%";
+                    messageBubble.style.wordWrap = "break-word";
+
+                    messageBubble.textContent = query;  // Safely set the text content
+
+                    userMessage.appendChild(messageBubble);
+                    chatContainer.appendChild(userMessage);
+
+                    // Scroll to the bottom of the chat container
+                    chatContainer.scrollTop = chatContainer.scrollHeight;
+
                     // Construct the URL for the chat endpoint
                     var baseUrl = window.location.origin + window.location.pathname;
                     if (!baseUrl.endsWith("/")) {
@@ -26,12 +55,51 @@
                     url = url.toString();
 
                     fetch(url, { method: 'GET' })
-                    .then(function(response) { return response.text(); })
-                    .then(function(text) {
-                        document.getElementById("response").innerText = text;
-                    })
+                        .then(function(response) { return response.text(); })
+                        .then(function(text) {
+                            // Add bot's response to the chat
+                            var botMessage = document.createElement("div");
+                            botMessage.style.textAlign = "left";
+                            botMessage.style.margin = "10px";
+
+                            var messageBubble = document.createElement("div");
+                            messageBubble.style.backgroundColor = "#fff3e0";
+                            messageBubble.style.padding = "10px";
+                            messageBubble.style.display = "inline-block";
+                            messageBubble.style.borderRadius = "10px";
+                            messageBubble.style.maxWidth = "70%";
+                            messageBubble.style.wordWrap = "break-word";
+
+                            messageBubble.textContent = text;  // Safely set the text content
+
+                            botMessage.appendChild(messageBubble);
+                            chatContainer.appendChild(botMessage);
+
+
+                            // Scroll to the bottom of the chat container
+                            chatContainer.scrollTop = chatContainer.scrollHeight;
+
+                            // Clear the query input field
+                            document.getElementById("query").value = "";
+                        })
                     .catch(function(error) {
-                        document.getElementById("response").innerText = "Error: " + error;
+                        var errorMessage = document.createElement("div");
+                        errorMessage.style.textAlign = "left";
+                        errorMessage.style.margin = "10px";
+
+                        var messageBubble = document.createElement("div");
+                        messageBubble.style.backgroundColor = "#ffebee";
+                        messageBubble.style.padding = "10px";
+                        messageBubble.style.display = "inline-block";
+                        messageBubble.style.borderRadius = "10px";
+                        messageBubble.style.maxWidth = "70%";
+                        messageBubble.style.wordWrap = "break-word";
+
+                        messageBubble.textContent = "Error: " + error;  // Safely set the text content
+
+                        errorMessage.appendChild(messageBubble);
+                        chatContainer.appendChild(errorMessage);
+                        chatContainer.scrollTop = chatContainer.scrollHeight;
                     });
                 }
             </script>
