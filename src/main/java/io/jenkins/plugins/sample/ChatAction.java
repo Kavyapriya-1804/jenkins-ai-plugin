@@ -2,6 +2,7 @@ package io.jenkins.plugins.sample;
 
 import hudson.Extension;
 import hudson.model.UnprotectedRootAction;
+import io.jenkins.plugins.llms.LLM;
 import java.io.IOException;
 import javax.servlet.ServletException;
 import org.kohsuke.stapler.QueryParameter;
@@ -43,9 +44,14 @@ public class ChatAction implements UnprotectedRootAction {
             throws IOException {
         rsp.setContentType("text/plain;charset=UTF-8");
 
-        // Create an instance of your LLM wrapper
-        HelloLlm llm = new HelloLlm();
-        String answer = llm.talkToLLM(query);
-        rsp.getWriter().write(answer);
+        String answer = "There was an error in resolving this query !";
+        try {
+            LLM llm = new LLM();
+            answer = llm.ragRetrievalWithLLM(query);
+        } catch (Exception e) {
+
+        } finally {
+            rsp.getWriter().write(answer);
+        }
     }
 }
