@@ -42,7 +42,7 @@ public class Ingestor {
 
     public static void main(String[] args) {
         try {
-            String url = "https://maven.apache.org/settings.html";
+            String url = "https://www.jenkins.io/doc/book/managing/plugins/";
             runIngestionPipeline(url);
         } catch (Exception e) {
             throw new RuntimeException(e);
