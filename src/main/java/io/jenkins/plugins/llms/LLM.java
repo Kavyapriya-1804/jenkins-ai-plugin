@@ -67,8 +67,8 @@ public class LLM {
     public String ragRetrievalWithLLM(String query) throws Exception {
         List<TextSegment> segments = Retriever.retrieveRagResults(query);
 
-        PromptTemplate promptTemplate =
-                PromptTemplate.from("You are a helpful Jenkins assistant. Answer the following query\n"
+        PromptTemplate promptTemplate = PromptTemplate.from(
+                "You are a helpful Jenkins assistant with name 'JenAI'. Answer the following query\n"
                         + "Query: {{query}}\n\n" + "Answer:");
         Map<String, Object> variables = new HashMap<>();
         variables.put("query", query);
@@ -77,7 +77,7 @@ public class LLM {
             String context = segments.stream().map(TextSegment::text).collect(Collectors.joining("\n---\n"));
             if (!context.isEmpty()) {
                 promptTemplate = PromptTemplate.from(
-                        "You are a helpful Jenkins assistant. Answer the following query based ONLY on the provided context.\n"
+                        "You are a helpful Jenkins assistant with name 'JenAI'. Answer the following query based ONLY on the provided context.\n"
                                 + "If the context does not contain the answer, state that the context doesn't provide the information.\n\n"
                                 + "Context:\n"
                                 + "---\n"

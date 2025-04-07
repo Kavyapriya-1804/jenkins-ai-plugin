@@ -15,12 +15,12 @@ public class ChatAction implements UnprotectedRootAction {
     @Override
     public String getIconFileName() {
         // This icon will be used in the Jenkins top-level menu.
-        return "symbol-chat plugin-ionicons-api";
+        return "symbol-chatbubbles-outline plugin-ionicons-api";
     }
 
     @Override
     public String getDisplayName() {
-        return "LLM Chat";
+        return "Jenkins AI Assistant";
     }
 
     @Override

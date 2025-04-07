@@ -1,20 +1,36 @@
 <?jelly escape-by-default='true'?>
-<j:jelly xmlns:j="jelly:core" xmlns:l="/lib/layout" xmlns:st="jelly:stapler">
-    <l:layout title="LLM Chat Interface">
+<j:jelly xmlns:j="jelly:core" xmlns:l="/lib/layout" xmlns:st="jelly:stapler" xmlns:d="jelly:define">
+    <l:layout title="Jenkins AI">
+        <l:header>
+            <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+            <link href="https://fonts.googleapis.com/css?family=Allerta" rel="stylesheet"/>
+            <st:adjunct includes="io.jenkins.plugins.sample.ChatAction.chatAction"/>
+        </l:header>
         <l:main-panel>
-            <div style="text-align:center; padding: 20px;">
-                <h1 style="font-family: Arial, sans-serif; color: #4CAF50;">LLM Chat Interface</h1>
-                <p style="font-size: 16px; color: #555;">Enter your query below and hit "Send" to chat with the LLM.</p>
-
-                <div id="chat-container" style="border: 1px solid #ddd; padding: 20px; width: 80%; margin: 0 auto; max-height: 400px; overflow-y: scroll; background-color: #f9f9f9;">
-                    <!-- Chat messages will appear here -->
+            <div class="page-wrapper">
+                <div class="main-logo-wrapper">
+                    <div class="main-logo-container">
+                        <img src="${resURL}/plugin/jenkins-ai-plugin/images/jenkinsAI.png"
+                            alt="Jenkins AI" class="main-logo" />
+                    </div>
                 </div>
 
-                <textarea id="query" rows="4" cols="60" placeholder="Type your message here..." style="width: 80%; margin-top: 20px; padding: 10px; border-radius: 5px; border: 1px solid #ddd;"></textarea><br/><br/>
+                <div class="chat-area-wrapper">
+                    <div id="chatContainer">
+                        <!-- Chat messages will appear here -->
+                    </div>
 
-                <button onclick="sendQuery()" style="background-color: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
-                    Send
-                </button>
+                    <div class="input-area-wrapper">
+                        <div class="query-wrapper">
+                            <textarea id="query" rows="4" cols="60" placeholder="Ask JenAI"></textarea>
+                        </div>
+
+                        <button class="send-btn" onclick="sendQuery()">
+                            <img src="${resURL}/plugin/jenkins-ai-plugin/images/send.png"
+                                 alt="Send" class="send-icon" />
+                        </button>
+                    </div>
+                </div>
             </div>
 
             <script type="text/javascript">
@@ -25,17 +41,12 @@
                         return;
                     }
 
-                    var chatContainer = document.getElementById("chat-container");
+                    var chatContainer = document.getElementById("chatContainer");
                     var userMessage = document.createElement("div");
-                    userMessage.style.textAlign = "right";
-                    userMessage.style.margin = "10px";
+                    userMessage.classList.add("user-msg-wrapper");
 
                     var messageBubble = document.createElement("div");
-                    messageBubble.style.padding = "10px";
-                    messageBubble.style.display = "inline-block";
-                    messageBubble.style.borderRadius = "10px";
-                    messageBubble.style.maxWidth = "70%";
-                    messageBubble.style.wordWrap = "break-word";
+                    messageBubble.classList.add("user-msg");
 
                     messageBubble.textContent = query;  // Safely set the text content
 
@@ -59,16 +70,10 @@
                         .then(function(text) {
                             // Add bot's response to the chat
                             var botMessage = document.createElement("div");
-                            botMessage.style.textAlign = "left";
-                            botMessage.style.margin = "10px";
+                            botMessage.classList.add("ai-msg-wrapper");
 
                             var messageBubble = document.createElement("div");
-                            messageBubble.style.backgroundColor = "#fff3e0";
-                            messageBubble.style.padding = "10px";
-                            messageBubble.style.display = "inline-block";
-                            messageBubble.style.borderRadius = "10px";
-                            messageBubble.style.maxWidth = "70%";
-                            messageBubble.style.wordWrap = "break-word";
+                            messageBubble.classList.add("ai-msg");
 
                             messageBubble.textContent = text;  // Safely set the text content
 
@@ -84,18 +89,12 @@
                         })
                     .catch(function(error) {
                         var errorMessage = document.createElement("div");
-                        errorMessage.style.textAlign = "left";
-                        errorMessage.style.margin = "10px";
+                        errorMessage.classList.add("ai-msg-wrapper");
 
                         var messageBubble = document.createElement("div");
-                        messageBubble.style.backgroundColor = "#ffebee";
-                        messageBubble.style.padding = "10px";
-                        messageBubble.style.display = "inline-block";
-                        messageBubble.style.borderRadius = "10px";
-                        messageBubble.style.maxWidth = "70%";
-                        messageBubble.style.wordWrap = "break-word";
+                        errorMessage.classList.add("error-msg", "ai-msg");
 
-                        messageBubble.textContent = "Error: " + error;  // Safely set the text content
+                        messageBubble.textContent = "Error occured ! : " + error;
 
                         errorMessage.appendChild(messageBubble);
                         chatContainer.appendChild(errorMessage);
