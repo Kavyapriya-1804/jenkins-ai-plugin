@@ -1,0 +1,107 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:l="/lib/layout" xmlns:st="jelly:stapler" xmlns:d="jelly:define">
+    <l:layout title="Jenkins AI">
+        <l:header>
+            <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+            <link href="https://fonts.googleapis.com/css?family=Allerta" rel="stylesheet"/>
+            <st:adjunct includes="io.jenkins.plugins.sample.ChatAction.chatAction"/>
+        </l:header>
+        <l:main-panel>
+            <div class="page-wrapper">
+                <div class="main-logo-wrapper">
+                    <div class="main-logo-container">
+                        <img src="${resURL}/plugin/jenkins-ai-plugin/images/jenkinsAI.png"
+                            alt="Jenkins AI" class="main-logo" />
+                    </div>
+                </div>
+
+                <div class="chat-area-wrapper">
+                    <div id="chatContainer">
+                        <!-- Chat messages will appear here -->
+                    </div>
+
+                    <div class="input-area-wrapper">
+                        <div class="query-wrapper">
+                            <textarea id="query" rows="4" cols="60" placeholder="Ask JenAI"></textarea>
+                        </div>
+
+                        <button class="send-btn" onclick="sendQuery()">
+                            <img src="${resURL}/plugin/jenkins-ai-plugin/images/send.png"
+                                 alt="Send" class="send-icon" />
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <script type="text/javascript">
+                function sendQuery() {
+                    var query = document.getElementById("query").value;
+                    if (query.trim() === "") {
+                        alert("Please enter a query.");
+                        return;
+                    }
+
+                    var chatContainer = document.getElementById("chatContainer");
+                    var userMessage = document.createElement("div");
+                    userMessage.classList.add("user-msg-wrapper");
+
+                    var messageBubble = document.createElement("div");
+                    messageBubble.classList.add("user-msg");
+
+                    messageBubble.textContent = query;  // Safely set the text content
+
+                    userMessage.appendChild(messageBubble);
+                    chatContainer.appendChild(userMessage);
+
+                    // Scroll to the bottom of the chat container
+                    chatContainer.scrollTop = chatContainer.scrollHeight;
+
+                    // Construct the URL for the chat endpoint
+                    var baseUrl = window.location.origin + window.location.pathname;
+                    if (!baseUrl.endsWith("/")) {
+                        baseUrl += "/";
+                    }
+                    var url = new URL("chat", baseUrl);
+                    url.searchParams.set("query", query);
+                    url = url.toString();
+
+                    fetch(url, { method: 'GET' })
+                        .then(function(response) { return response.text(); })
+                        .then(function(text) {
+                            // Add bot's response to the chat
+                            var botMessage = document.createElement("div");
+                            botMessage.classList.add("ai-msg-wrapper");
+
+                            var messageBubble = document.createElement("div");
+                            messageBubble.classList.add("ai-msg");
+
+                            messageBubble.textContent = text;  // Safely set the text content
+
+                            botMessage.appendChild(messageBubble);
+                            chatContainer.appendChild(botMessage);
+
+
+                            // Scroll to the bottom of the chat container
+                            chatContainer.scrollTop = chatContainer.scrollHeight;
+
+                            // Clear the query input field
+                            document.getElementById("query").value = "";
+                        })
+                    .catch(function(error) {
+                        var errorMessage = document.createElement("div");
+                        errorMessage.classList.add("ai-msg-wrapper");
+
+                        var messageBubble = document.createElement("div");
+                        errorMessage.classList.add("error-msg", "ai-msg");
+
+                        messageBubble.textContent = "Error occured ! : " + error;
+
+                        errorMessage.appendChild(messageBubble);
+                        chatContainer.appendChild(errorMessage);
+                        chatContainer.scrollTop = chatContainer.scrollHeight;
+                    });
+                }
+            </script>
+        </l:main-panel>
+    </l:layout>
+</j:jelly>
